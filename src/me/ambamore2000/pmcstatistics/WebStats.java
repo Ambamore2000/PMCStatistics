@@ -16,6 +16,8 @@ public class WebStats {
             String urlString = "http://www.planetminecraft.com/";
             URL url = new URL(urlString);
             URLConnection uc = url.openConnection();
+            uc.setConnectTimeout(2000);
+            uc.setReadTimeout(2000);
             uc.addRequestProperty("User-Agent",
                     "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)");
             uc.connect();
@@ -28,7 +30,7 @@ public class WebStats {
             }
             return String.valueOf(parsedContentFromUrl);
         } catch (Exception e) {
-            System.out.println("ERROR: Attempting to recieve HTML again in 10 seconds....");
+            System.out.println("ERROR: Attempting to recieve HTML again in 5 seconds....");
             System.out.println("Cause: " + e.getCause());
             try {
                 Thread.sleep(5 * 1000);
@@ -40,12 +42,23 @@ public class WebStats {
     }
 
     public String getOnline() {
-        return Jsoup.parse(getHTML()).body()
-                .getElementById("container")
-                .getElementById("right")
-                .getElementsByClass("pane_content").get(1)
-                .getElementsByClass("statistics")
-                .select("tbody").select("tr").select("td").get(0)
-                .getElementsByClass("stat").text();
+        try {
+            return Jsoup.parse(getHTML()).body()
+                    .getElementById("container")
+                    .getElementById("right")
+                    .getElementsByClass("pane_content").get(1)
+                    .getElementsByClass("statistics")
+                    .select("tbody").select("tr").select("td").get(0)
+                    .getElementsByClass("stat").text();
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("ERROR: Attempting to recieve ONLINE again in 5 seconds....");
+            System.out.println("Cause: " + e.getCause());
+            try {
+                Thread.sleep(5 * 1000);
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
+            }
+            return getOnline();
+        }
     }
 }

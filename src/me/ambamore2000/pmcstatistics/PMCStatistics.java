@@ -118,7 +118,7 @@ public class PMCStatistics {
         topOut.close();
 
         try {
-            Thread.sleep(720 * 1000);
+            Thread.sleep(900 * 1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
