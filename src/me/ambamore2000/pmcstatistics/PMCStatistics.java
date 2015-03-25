@@ -8,117 +8,96 @@ import java.util.Date;
  * Created by AndrewKim.
  */
 public class PMCStatistics {
-
     static WebStats webStats;
 
     public static void main(String[] args) {
         webStats = new WebStats();
         while (true) {
-            addToFile();
+            try {
+                addToFile();
+            } catch (Exception e) {
+                System.out.println("§cERROR: Received non-expected exception. Attempting to update in 15 seconds.");
+                try {
+                    Thread.sleep(15 * 1000);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+                addToFile();
+            }
         }
     }
 
     private static void addToFile() {
-        Date dateObject = new Date();
+        try {
+            Date dateObject = new Date();
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE MMMM dd, yyyy");
-        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm aa");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE MMMM dd, yyyy");
+            SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm aa");
 
-        String todayDate = dateFormat.format(dateObject);
-        String time = timeFormat.format(dateObject);
+            String todayDate = dateFormat.format(dateObject);
+            String time = timeFormat.format(dateObject);
 
-        File todayDir = new File(todayDate);
-        if (!todayDir.exists())
-            todayDir.mkdir();
+            File todayDir = new File(todayDate);
+            if (!todayDir.exists()) {
+                todayDir.mkdir();
+            }
 
-        File statsFile = new File(todayDir.getAbsolutePath() + "/stats.txt");
-        File topFile = new File(todayDir.getAbsolutePath() + "/top.txt");
+            File statsFile = new File(todayDir.getAbsolutePath() + "/stats.txt");
+            File topFile = new File(todayDir.getAbsolutePath() + "/top.txt");
 
-        for (File a : new File[] {statsFile, topFile}) {
-            if (!a.exists())
-                try {
+            for (File a : new File[]{statsFile, topFile})
+                if (!a.exists())
                     a.createNewFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-        }
 
-        PrintWriter statsOut = null, topOut = null;
-        try {
-            statsOut = new PrintWriter(new BufferedWriter(new FileWriter(statsFile, true)));
-            topOut = new PrintWriter(new BufferedWriter(new FileWriter(topFile, true)));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            PrintWriter statsOut = new PrintWriter(new BufferedWriter(new FileWriter(statsFile, true))),
+                    topOut = new PrintWriter(new BufferedWriter(new FileWriter(statsFile, true)));
+            String newOnline = webStats.getOnline();
 
-        String newOnline = webStats.getOnline();
+            boolean newStats = false;
 
-        boolean newStats = false;
-
-        FileReader fileReader = null;
-        try {
-            fileReader = new FileReader(topFile);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        assert fileReader != null;
-        BufferedReader bufferedReader = new BufferedReader(fileReader);
-        StringBuilder stringBuffer = new StringBuilder();
-        String line;
-        try {
+            FileReader fileReader = new FileReader(topFile);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            StringBuilder stringBuffer = new StringBuilder();
+            String line;
             while ((line = bufferedReader.readLine()) != null) {
                 stringBuffer.append(line);
                 stringBuffer.append("\n");
             }
             fileReader.close();
+
+            String topContent = stringBuffer.toString();
+            String onlineString = "Online: ";
+
+            if (topContent.isEmpty()) {
+                newStats = true;
+            } else {
+                String topOnlineString = topContent.substring(
+                        topContent.indexOf(onlineString) + onlineString.length(), topContent.length() - 1
+                ).replace(",", "");
+                int topOnline = Integer.parseInt(topOnlineString);
+                int newOnlineInt = Integer.parseInt(newOnline.replace(",", ""));
+                if (newOnlineInt > topOnline) {
+                    System.out.println("§aSetting new top stat...");
+                    newStats = true;
+                    FileOutputStream writer = new FileOutputStream(topFile);
+                }
+            }
+
+            String[] values = {time, onlineString + newOnline};
+
+            for (String val : values) {
+                System.out.println("§b" + val);
+                statsOut.println(val);
+                if (newStats)
+                    topOut.println(val);
+            }
+
+            statsOut.close();
+            topOut.close();
+
+            Thread.sleep(900 * 1000);
         } catch (IOException e) {
             e.printStackTrace();
-        }
-
-        String topContent = stringBuffer.toString();
-
-        String onlineString = "Online: ";
-
-        if (topContent.isEmpty()) {
-            newStats = true;
-        } else {
-            String topOnlineString = topContent.substring(
-                    topContent.indexOf(onlineString), topContent.length()
-            ).replace(onlineString, "");
-            int topOnline = Integer.parseInt(topOnlineString.replace(",", "").trim());
-            int newOnlineInt = Integer.parseInt(newOnline.replace(",", "").trim());
-            if (newOnlineInt > topOnline) {
-                System.out.println("Setting new top stat...");
-                newStats = true;
-                PrintWriter writer = null;
-                try {
-                    writer = new PrintWriter(topFile);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-                assert writer != null;
-                writer.print("");
-                writer.close();
-            }
-        }
-
-        String[] values = {time, onlineString + newOnline};
-
-        assert statsOut != null;
-        assert topOut != null;
-
-        for (String val : values) {
-            System.out.println(val);
-            statsOut.println(val);
-            if (newStats)
-                topOut.println(val);
-        }
-
-        statsOut.close();
-        topOut.close();
-
-        try {
-            Thread.sleep(900 * 1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
