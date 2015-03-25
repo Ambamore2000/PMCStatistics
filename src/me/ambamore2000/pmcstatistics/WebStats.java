@@ -13,8 +13,7 @@ public class WebStats {
 
     public static String getHTML() {
         try {
-            String urlString = "http://www.planetminecraft.com/";
-            URL url = new URL(urlString);
+            URL url = new URL("http://www.planetminecraft.com/");
             URLConnection uc = url.openConnection();
             uc.setConnectTimeout(2000);
             uc.setReadTimeout(2000);
@@ -30,10 +29,10 @@ public class WebStats {
             }
             return String.valueOf(parsedContentFromUrl);
         } catch (Exception e) {
-            System.out.println("ERROR: Attempting to recieve HTML again in 5 seconds....");
-            System.out.println("Cause: " + e.getCause());
+            System.out.println("§cERROR: Attempting to recieve HTML again in 10 seconds....");
+            System.out.println("§4Cause: " + e.getCause());
             try {
-                Thread.sleep(5 * 1000);
+                Thread.sleep(10 * 1000);
             } catch (InterruptedException e1) {
                 e1.printStackTrace();
             }
@@ -43,16 +42,16 @@ public class WebStats {
 
     public String getOnline() {
         try {
-            return Jsoup.parse(getHTML()).body()
+            return Jsoup.parse(getHTML())
                     .getElementById("container")
                     .getElementById("right")
                     .getElementsByClass("pane_content").get(1)
                     .getElementsByClass("statistics")
                     .select("tbody").select("tr").select("td").get(0)
                     .getElementsByClass("stat").text();
-        } catch (IndexOutOfBoundsException e) {
-            System.out.println("ERROR: Attempting to recieve ONLINE again in 5 seconds....");
-            System.out.println("Cause: " + e.getCause());
+        } catch (Exception e) {
+            System.out.println("§cERROR: Attempting to recieve ONLINE again in 5 seconds....");
+            System.out.println("§4Cause: " + e.getCause());
             try {
                 Thread.sleep(5 * 1000);
             } catch (InterruptedException e1) {
