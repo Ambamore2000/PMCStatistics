@@ -29,8 +29,8 @@ public class WebStats {
             }
             return String.valueOf(parsedContentFromUrl);
         } catch (Exception e) {
-            System.out.println("§cERROR: Attempting to recieve HTML again in 10 seconds....");
-            System.out.println("§4Cause: " + e.getCause());
+            System.out.println("ERROR: Attempting to recieve HTML again in 10 seconds....");
+            System.out.println("Cause: " + e.getCause());
             try {
                 Thread.sleep(10 * 1000);
             } catch (InterruptedException e1) {
@@ -50,8 +50,8 @@ public class WebStats {
                     .select("tbody").select("tr").select("td").get(0)
                     .getElementsByClass("stat").text();
         } catch (Exception e) {
-            System.out.println("§cERROR: Attempting to recieve ONLINE again in 5 seconds....");
-            System.out.println("§4Cause: " + e.getCause());
+            System.out.println("ERROR: Attempting to recieve ONLINE again in 5 seconds....");
+            System.out.println("Cause: " + e.getCause());
             try {
                 Thread.sleep(5 * 1000);
             } catch (InterruptedException e1) {

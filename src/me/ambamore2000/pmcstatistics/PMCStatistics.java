@@ -16,7 +16,7 @@ public class PMCStatistics {
             try {
                 addToFile();
             } catch (Exception e) {
-                System.out.println("§cERROR: Received non-expected exception. Attempting to update in 15 seconds.");
+                System.out.println("ERROR: Received non-expected exception. Attempting to update in 15 seconds.");
                 try {
                     Thread.sleep(15 * 1000);
                 } catch (InterruptedException e1) {
@@ -37,7 +37,7 @@ public class PMCStatistics {
             String todayDate = dateFormat.format(dateObject);
             String time = timeFormat.format(dateObject);
 
-            File todayDir = new File(todayDate);
+            File todayDir = new File("/var/www/" + todayDate);
             if (!todayDir.exists()) {
                 todayDir.mkdir();
             }
@@ -50,7 +50,7 @@ public class PMCStatistics {
                     a.createNewFile();
 
             PrintWriter statsOut = new PrintWriter(new BufferedWriter(new FileWriter(statsFile, true))),
-                    topOut = new PrintWriter(new BufferedWriter(new FileWriter(statsFile, true)));
+                    topOut = new PrintWriter(new BufferedWriter(new FileWriter(topFile, true)));
             String newOnline = webStats.getOnline();
 
             boolean newStats = false;
@@ -77,7 +77,7 @@ public class PMCStatistics {
                 int topOnline = Integer.parseInt(topOnlineString);
                 int newOnlineInt = Integer.parseInt(newOnline.replace(",", ""));
                 if (newOnlineInt > topOnline) {
-                    System.out.println("§aSetting new top stat...");
+                    System.out.println("Setting new top stat...");
                     newStats = true;
                     FileOutputStream writer = new FileOutputStream(topFile);
                 }
@@ -86,7 +86,7 @@ public class PMCStatistics {
             String[] values = {time, onlineString + newOnline};
 
             for (String val : values) {
-                System.out.println("§b" + val);
+                System.out.println(val);
                 statsOut.println(val);
                 if (newStats)
                     topOut.println(val);
