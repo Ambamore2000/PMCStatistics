@@ -2,6 +2,7 @@ package me.ambamore2000.pmcstatistics;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -10,8 +11,11 @@ import java.util.Date;
 public class PMCStatistics {
     static WebStats webStats;
 
+    static Calendar cal;
+
     public static void main(String[] args) {
         webStats = new WebStats();
+        cal = Calendar.getInstance();
         while (true) {
             try {
                 addToFile();
@@ -31,19 +35,23 @@ public class PMCStatistics {
         try {
             Date dateObject = new Date();
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE MMMM dd, yyyy");
             SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm aa");
 
-            String todayDate = dateFormat.format(dateObject);
             String time = timeFormat.format(dateObject);
 
-            File todayDir = new File("/var/www/" + todayDate);
-            if (!todayDir.exists()) {
-                todayDir.mkdir();
-            }
+            String year = String.valueOf(cal.get(Calendar.YEAR));
+            String month = getMonth(cal.get(Calendar.MONTH) + 1);
+            String day = cal.get(Calendar.DAY_OF_MONTH) + ", " + getDay(cal.get(Calendar.DAY_OF_WEEK));
 
-            File statsFile = new File(todayDir.getAbsolutePath() + "/stats.txt");
-            File topFile = new File(todayDir.getAbsolutePath() + "/top.txt");
+            File yearDir = new File("/var/www/" + year);
+            createNewDir(yearDir);
+            File monthDir = new File(yearDir.getAbsolutePath() + "/" + month);
+            createNewDir(monthDir);
+            File dayDir = new File(monthDir.getAbsolutePath() + "/" + day);
+            createNewDir(dayDir);
+
+            File statsFile = new File(dayDir.getAbsolutePath() + "/stats.txt");
+            File topFile = new File(dayDir.getAbsolutePath() + "/top.txt");
 
             for (File a : new File[]{statsFile, topFile})
                 if (!a.exists())
@@ -101,5 +109,60 @@ public class PMCStatistics {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    private static String getDay(int x) {
+        switch (x) {
+            case 1:
+                return "Sunday";
+            case 2:
+                return "Monday";
+            case 3:
+                return "Tuesday";
+            case 4:
+                return "Wednesday";
+            case 5:
+                return "Thursday";
+            case 6:
+                return "Friday";
+            case 7:
+                return "Saturday";
+        }
+        return "";
+    }
+
+    private static String getMonth(int x) {
+        switch (x) {
+            case 1:
+                return "January";
+            case 2:
+                return "February";
+            case 3:
+                return "March";
+            case 4:
+                return "April";
+            case 5:
+                return "May";
+            case 6:
+                return "June";
+            case 7:
+                return "July";
+            case 8:
+                return "August";
+            case 9:
+                return "September";
+            case 10:
+                return "October";
+            case 11:
+                return "November";
+            case 12:
+                return "December";
+        }
+        return "";
+    }
+
+    private static void createNewDir(File f) {
+        if (!f.exists() || !f.isDirectory())
+            f.mkdir();
     }
 }
