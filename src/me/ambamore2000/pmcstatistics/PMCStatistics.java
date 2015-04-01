@@ -11,11 +11,8 @@ import java.util.Date;
 public class PMCStatistics {
     static WebStats webStats;
 
-    static Calendar cal;
-
     public static void main(String[] args) {
         webStats = new WebStats();
-        cal = Calendar.getInstance();
         while (true) {
             try {
                 addToFile();
@@ -33,6 +30,7 @@ public class PMCStatistics {
 
     private static void addToFile() {
         try {
+            Calendar cal = Calendar.getInstance();
             Date dateObject = new Date();
 
             SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm aa");
