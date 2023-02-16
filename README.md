@@ -1,5 +1,10 @@
 # PMCStatistics
-Application made by Ambamore2000.
+
+# Story
+
+My first program written in Java. I created this application to understand when it would be the best time to post on a website with a list of servers (http://planetminecraft.com) to maximize potential audiences.
+
+# Application
 
 This java app keeps track of the statistics of the amount of people on the PMC (Planet Minecraft) website.
 
